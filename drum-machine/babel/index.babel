@@ -1,0 +1,214 @@
+const bankOne = [
+  {
+    keyTrigger: "Q",
+    id: "Heater-1",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3"
+  },
+  {
+    keyTrigger: "W",
+    id: "Heater-2",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3"
+  },
+  {
+    keyTrigger: "E",
+    id: "Heater-3",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3"
+  },
+  {
+    keyCode: 65,
+    keyTrigger: "A",
+    id: "Heater-4",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3"
+  },
+  {
+    keyTrigger: "S",
+    id: "Clap",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3"
+  },
+  {
+    keyTrigger: "D",
+    id: "Open-HH",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3"
+  },
+  {
+    keyTrigger: "Z",
+    id: "Kick-n'-Hat",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3"
+  },
+  {
+    keyTrigger: "X",
+    id: "Kick",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3"
+  },
+  {
+    keyTrigger: "C",
+    id: "Closed-HH",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3"
+  }
+];
+
+const bankTwo = [
+  {
+    keyTrigger: "Q",
+    id: "Chord-1",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3"
+  },
+  {
+    keyTrigger: "W",
+    id: "Chord-2",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Chord_2.mp3"
+  },
+  {
+    keyTrigger: "E",
+    id: "Chord-3",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Chord_3.mp3"
+  },
+  {
+    keyTrigger: "A",
+    id: "Shaker",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Give_us_a_light.mp3"
+  },
+  {
+    keyTrigger: "S",
+    id: "Open-HH",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Dry_Ohh.mp3"
+  },
+  {
+    keyTrigger: "D",
+    id: "Closed-HH",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Bld_H1.mp3"
+  },
+  {
+    keyTrigger: "Z",
+    id: "Punchy-Kick",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/punchy_kick_1.mp3"
+  },
+  {
+    keyTrigger: "X",
+    id: "Side-Stick",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/side_stick_1.mp3"
+  },
+  {
+    keyTrigger: "C",
+    id: "Snare",
+    src: "https://s3.amazonaws.com/freecodecamp/drums/Brk_Snr.mp3"
+  }
+];
+
+class Drumpad extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleKey = this.handleKey.bind(this);
+  }
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKey);
+    window.focus();
+  }
+  componentUnmoount() {
+    document.removeEventListener("keydown", this.handlekey);
+  }
+
+  handleKey = function(event) {
+    if (event.keyCode == this.props.keyTrigger.charCodeAt()) {
+      this.audio.play();
+      this.audio.currentTime = 0;
+      this.props.handleDis(this.props.id);
+    }
+  };
+  handleClick() {
+    this.audio.play();
+    this.audio.currentTime = 0;
+    this.props.handleDis(this.props.id);
+  }
+  render() {
+    return (
+      <div className="pad" id={this.props.id} onClick={this.handleClick}>
+        <h1>{this.props.keyTrigger}</h1>
+        <audio
+          className='bet'
+          id={this.props.KeyTrigger}
+          src={this.props.src}
+          ref={ref => (this.audio = ref)}
+        />
+      </div>
+    );
+  }
+}
+
+class Drumapp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dis: "Press a key",
+      bank: bankOne,
+      vol: 0.4
+    };
+    this.handleDis = this.handleDis.bind(this);
+    this.bankSwitch=this.bankSwitch.bind(this);
+    this.volumeChange=this.volumeChange.bind(this)
+  }
+  handleDis(display) {
+    this.setState({
+      dis: display
+    });
+  }
+  volumeChange(e){
+    this.setState({
+      vol:e.target.value
+    })
+  }
+  bankSwitch(){
+    if(this.state.bank==bankOne){
+      this.setState({
+        bank:bankTwo
+      })
+    } else{
+      this.setState({
+        bank:bankOne
+      })
+    }
+  }
+  render() {
+    let ban=this.state.bank;
+    const bankSlider = this.state.bank === bankOne ? {
+      float: 'left'
+    } : {
+      float: 'right'
+    }; 
+    {
+      const clips = [].slice.call(document.getElementsByClassName('bet'));
+      clips.forEach(sound => {
+        sound.volume = this.state.vol
+      });
+    }
+    return (
+      <div id="container">
+       
+        <div className="main">
+          {ban.map(x => (
+            <Drumpad
+              id={x.id}
+              keyTrigger={x.keyTrigger}
+              src={x.src}
+              handleDis={this.handleDis}
+            />
+          ))}
+        </div>
+        <div className='control'>
+          <p>Bank Switch</p>
+        <div id='togglebank' onClick={this.bankSwitch} className="type">
+          <div style={bankSlider} className="inner-type"/>
+          </div>
+          <div className='volume-slider'>
+            <input type='range' min='0' max='1' step='0.01' value={this.state.vol} onChange={this.volumeChange}></input>
+          </div>
+        <div id="dis">{this.state.dis}</div>
+         <div id='footer'>Coded By Petros Melake</div> 
+        </div>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<Drumapp />,document.getElementById('app'));
